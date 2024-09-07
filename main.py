@@ -26,7 +26,7 @@ def modify_multiple_texts(pdf_file, text_replacements):
 
                 # Ajouter le nouveau texte au même endroit
                 tl_x, tl_y = inst.tl  # Coin supérieur gauche de l'instance trouvée
-                page.insert_text((tl_x, tl_y+11), new_text, fontsize=12, color=(0, 0, 0))
+                page.insert_text((tl_x, tl_y+10), new_text, fontsize=12, color=(0, 0, 0))
 
     # Sauvegarder le fichier modifié dans le buffer
     document.save(output_pdf)
