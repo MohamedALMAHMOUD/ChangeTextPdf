@@ -62,4 +62,4 @@ if st.button("Modifier le PDF") and uploaded_file is not None:
     output_pdf = modify_pdf_text(uploaded_file, old_new_text_pairs)
 
     # Télécharger le fichier PDF modifié
-    st.download_button(label="Télécharger le PDF modifié", data=output_pdf, file_name=uploaded_file+"modified.pdf", mime="application/pdf")
+    st.download_button(label="Télécharger le PDF modifié", data=output_pdf, file_name=str(uploaded_file)+"modified.pdf", mime="application/pdf")
