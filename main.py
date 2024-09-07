@@ -29,7 +29,7 @@ def modify_pdf_text(file, old_new_text_pairs):
 
                                     # Ajouter le nouveau texte au même endroit avec la même taille de police
                                     tl_x, tl_y = inst.tl  # Coin supérieur gauche de l'instance trouvée
-                                    page.insert_text((tl_x, tl_y + 8), new_text, fontsize=font_size, fontname="helv", color=(0, 0, 0))
+                                    page.insert_text((tl_x, tl_y + 10), new_text, fontsize=font_size, fontname="helv", color=(0, 0, 0))
 
     # Enregistrer le PDF modifié dans un buffer
     output_pdf = io.BytesIO()
