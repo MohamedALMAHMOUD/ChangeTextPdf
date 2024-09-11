@@ -27,6 +27,12 @@ def modify_multiple_texts(pdf_file, text_replacements):
                 st.warning(f"Texte '{old_text}' introuvable sur la page {page_num + 1}.")
                 continue
             
+            # Affichage des spans pour déboguer
+            st.write(f"--- Débogage pour le texte '{old_text}' sur la page {page_num + 1} ---")
+            for block in spans:
+                for span in block.get("spans", []):
+                    st.write(f"Contenu du span : {span['text']}, Police : {span['font']}, Taille : {span['size']}")
+            
             # Remplacer les occurrences du texte trouvé
             for inst in text_instances:
                 fontname = None
