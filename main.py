@@ -15,14 +15,12 @@ def modify_multiple_texts(pdf_file, text_replacements):
     for page_num in range(len(document)):
         page = document[page_num]
         
-        # Extraire le contenu de la page
-        text_instances = page.search_for(old_text)
-        
         # Extraire les blocs de texte et leurs propriétés de style
         spans = page.get_text("dict")["blocks"]
 
+        # Boucle sur les paires de textes à remplacer
         for old_text, new_text in text_replacements:
-            # Chercher les occurrences du texte
+            # Chercher les occurrences du texte à remplacer
             text_instances = page.search_for(old_text)
             
             # Remplacer les occurrences du texte trouvé
