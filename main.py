@@ -18,6 +18,12 @@ def modify_multiple_texts(pdf_file, text_replacements):
         # Extraire les blocs de texte et leurs propriétés de style
         spans = page.get_text("dict")["blocks"]
 
+        # Afficher tout le texte et les informations des spans pour cette page
+        st.write(f"--- Contenu de la page {page_num + 1} ---")
+        for block in spans:
+            for span in block.get("spans", []):
+                st.write(f"Contenu : {span['text']}, Police : {span['font']}, Taille : {span['size']}, Couleur : {span.get('color', 'N/A')}")
+
         # Boucle sur les paires de textes à remplacer
         for old_text, new_text in text_replacements:
             # Chercher les occurrences du texte à remplacer
@@ -26,12 +32,6 @@ def modify_multiple_texts(pdf_file, text_replacements):
             if not text_instances:
                 st.warning(f"Texte '{old_text}' introuvable sur la page {page_num + 1}.")
                 continue
-            
-            # Affichage des spans pour déboguer
-            st.write(f"--- Débogage pour le texte '{old_text}' sur la page {page_num + 1} ---")
-            for block in spans:
-                for span in block.get("spans", []):
-                    st.write(f"Contenu du span : {span['text']}, Police : {span['font']}, Taille : {span['size']}")
             
             # Remplacer les occurrences du texte trouvé
             for inst in text_instances:
