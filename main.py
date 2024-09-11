@@ -23,6 +23,10 @@ def modify_multiple_texts(pdf_file, text_replacements):
             # Chercher les occurrences du texte à remplacer
             text_instances = page.search_for(old_text)
             
+            if not text_instances:
+                st.warning(f"Texte '{old_text}' introuvable sur la page {page_num + 1}.")
+                continue
+            
             # Remplacer les occurrences du texte trouvé
             for inst in text_instances:
                 fontname = None
@@ -36,18 +40,18 @@ def modify_multiple_texts(pdf_file, text_replacements):
                             fontname = span["font"]
                             fontsize = span["size"]
                             color = span.get("color", (0, 0, 0))  # Utiliser la couleur trouvée ou noir
-
-                            # Arrêter la recherche après avoir trouvé la correspondance
                             break
 
                 if fontname and fontsize:
-                    # Effacer le texte existant en ajoutant un rectangle blanc par-dessus
+                    # Masquer l'ancien texte
                     page.add_redact_annot(inst)
                     page.apply_redactions()
-                    
-                    # Ajouter le nouveau texte au même endroit avec la même police et taille
+
+                    # Ajouter le nouveau texte avec la même police et taille
                     tl_x, tl_y = inst.tl  # Coin supérieur gauche de l'instance trouvée
                     page.insert_text((tl_x, tl_y), new_text, fontsize=fontsize, fontname=fontname, color=color)
+                else:
+                    st.warning(f"Impossible de récupérer la police et la taille pour '{old_text}'.")
 
     # Sauvegarder le fichier modifié dans le buffer
     document.save(output_pdf)
