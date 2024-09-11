@@ -5,7 +5,7 @@ import io
 # Définir la taille maximale du fichier (en octets) : 10 Mo
 MAX_FILE_SIZE = 10 * 1024 * 1024  # 10 Mo
 
-# Fonction pour modifier plusieurs textes dans le PDF
+# Fonction pour modifier plusieurs textes dans le PDF tout en conservant la police et la taille
 def modify_multiple_texts(pdf_file, text_replacements):
     # Ouvrir le fichier PDF depuis les bytes
     document = fitz.open(stream=pdf_file, filetype="pdf")
@@ -15,18 +15,41 @@ def modify_multiple_texts(pdf_file, text_replacements):
     for page_num in range(len(document)):
         page = document[page_num]
         
+        # Extraire le contenu de la page
+        text_instances = page.search_for(old_text)
+        
+        # Extraire les blocs de texte et leurs propriétés de style
+        spans = page.get_text("dict")["blocks"]
+
         for old_text, new_text in text_replacements:
+            # Chercher les occurrences du texte
             text_instances = page.search_for(old_text)
             
             # Remplacer les occurrences du texte trouvé
             for inst in text_instances:
-                # Effacer le texte existant en ajoutant un rectangle blanc par-dessus
-                page.add_redact_annot(inst)
-                page.apply_redactions()
+                fontname = None
+                fontsize = None
+                color = (0, 0, 0)  # Couleur noire par défaut
+                
+                # Chercher la police et la taille de l'ancien texte dans les spans
+                for block in spans:
+                    for span in block.get("spans", []):
+                        if old_text in span["text"]:
+                            fontname = span["font"]
+                            fontsize = span["size"]
+                            color = span.get("color", (0, 0, 0))  # Utiliser la couleur trouvée ou noir
 
-                # Ajouter le nouveau texte au même endroit
-                tl_x, tl_y = inst.tl  # Coin supérieur gauche de l'instance trouvée
-                page.insert_text((tl_x, tl_y+11), new_text, fontsize=12, color=(0, 0, 0))
+                            # Arrêter la recherche après avoir trouvé la correspondance
+                            break
+
+                if fontname and fontsize:
+                    # Effacer le texte existant en ajoutant un rectangle blanc par-dessus
+                    page.add_redact_annot(inst)
+                    page.apply_redactions()
+                    
+                    # Ajouter le nouveau texte au même endroit avec la même police et taille
+                    tl_x, tl_y = inst.tl  # Coin supérieur gauche de l'instance trouvée
+                    page.insert_text((tl_x, tl_y), new_text, fontsize=fontsize, fontname=fontname, color=color)
 
     # Sauvegarder le fichier modifié dans le buffer
     document.save(output_pdf)
